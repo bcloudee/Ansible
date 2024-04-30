@@ -1,0 +1,37 @@
+# Install Ansible on the Control Host
+$sudo yum install epel-release
+$sudo yum install ansible
+
+#Create an ansible User
+$sudo useradd ansible
+$sudo passwd ansible
+$logout
+
+#Configure a Pre-Shared Key for Ansible
+#Change to the ansible user:
+$sudo su - ansible
+$ssh-keygen
+$ssh-copy-id workstation
+
+#Configure the Ansible User on the Workstation Host
+$sudo visudo
+
+#Vim
+ansible       ALL=(ALL)       NOPASSWD: ALL
+
+#Create a Simple Inventory
+vim /home/ansible/inventory
+
+#Write an Ansible Playbook
+$vim /home/ansible/git-setup.yml
+--- # install git on target host
+- hosts: workstation
+  become: yes
+  tasks:
+  - name: install git
+    yum:
+      name: git
+      state: latest
+
+#Run the playbook
+$ansible-playbook -i /home/ansible/inventory /home/ansible/git-setup.yml
